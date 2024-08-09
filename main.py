@@ -27,7 +27,7 @@ def get_index():
         index = pickle.load(file)
 
     # Serialize the index to base64
-    index_serialized = base64.b64encode(pickle.dumps(index)).decode('utf-8')
+    index_serialized = base64.b64encode(index).decode('utf-8')
 
     return jsonify({"vector_index": index_serialized})
 
