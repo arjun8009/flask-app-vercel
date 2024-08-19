@@ -1,3 +1,5 @@
+import warnings
+warnings.filterwarnings("ignore")
 from flask import Flask, jsonify, request
 import pickle
 import os
@@ -37,7 +39,12 @@ def get_index():
     # Serialize the index to base64
     node_ids = [node.id_ for node in index.docstore.docs.values() if int(node.metadata['file_id']) in metadata] if type(metadata) == list else None
     print("Node ids",node_ids)
-    retriever = VectorIndexRetriever(index, node_ids=node_ids, similarity_top_k=similarity_top_k)
+    if len(node_ids) == 0 or node_ids == None:
+        print("1st pipeline entering")
+        retriever = VectorIndexRetriever(index, similarity_top_k=similarity_top_k)
+    else:
+        print("other pipelines entering")
+        retriever = VectorIndexRetriever(index,node_ids=node_ids,similarity_top_k=similarity_top_k)
     print("retriever-response",{i : retriever.retrieve(query) for i, query in enumerate(queries)})
     retrieved_nodes = base64.b64encode(pickle.dumps({i : retriever.retrieve(query) for i, query in enumerate(queries)})).decode('utf-8')
 
